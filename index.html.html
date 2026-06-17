@@ -1,0 +1,511 @@
+<div id="redBasicaApp" style="max-width:100%; margin:20px auto; font-family:'Segoe UI',system-ui,sans-serif;">
+  <style>
+    #redBasicaApp {
+      --bg: #f0f4f8;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-light: #475569;
+      --border: #cbd5e1;
+      --accent: #2563eb;
+      --accent-light: #3b82f6;
+      --cable: #94a3b8;
+      --device-pc: #0ea5e9;
+      --device-printer: #8b5cf6;
+      --device-switch: #f59e0b;
+      --device-router: #10b981;
+      --device-www: #ef4444;
+      background: var(--bg);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      color: var(--text);
+    }
+    #redBasicaApp .app-header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    #redBasicaApp .app-header h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      color: #0f172a;
+    }
+    #redBasicaApp .main-row {
+      display: flex;
+      flex-wrap: wrap;
+      min-height: 520px;
+    }
+    #redBasicaApp .canvas-panel {
+      flex: 1 1 70%;
+      min-width: 300px;
+      position: relative;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      border-right: 1px solid var(--border);
+      cursor: default;
+    }
+    #redBasicaApp .canvas-panel canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #redBasicaApp .canvas-hint {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      color: #64748b;
+      background: rgba(255,255,255,0.7);
+      padding: 4px 12px;
+      border-radius: 20px;
+      pointer-events: none;
+    }
+    #redBasicaApp .side-panel {
+      flex: 0 0 260px;
+      background: var(--card-bg);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+      max-height: 540px;
+      border-left: 1px solid var(--border);
+    }
+    #redBasicaApp .control-group {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 14px;
+      border: 1px solid var(--border);
+    }
+    #redBasicaApp .control-group h4 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-light);
+      margin-bottom: 10px;
+    }
+    #redBasicaApp .btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #redBasicaApp .btn:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+    #redBasicaApp .btn.accent {
+      background: #dbeafe;
+      border-color: #93c5fd;
+      color: #1e40af;
+    }
+    #redBasicaApp .btn.accent:hover {
+      background: #bfdbfe;
+    }
+    #redBasicaApp .btn.printer {
+      background: #ede9fe;
+      border-color: #c4b5fd;
+      color: #5b21b6;
+    }
+    #redBasicaApp .btn.printer:hover {
+      background: #ddd6fe;
+    }
+    #redBasicaApp .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    #redBasicaApp .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.7rem;
+      color: var(--text-light);
+    }
+    #redBasicaApp .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    #redBasicaApp .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    #redBasicaApp .log-area {
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.68rem;
+      max-height: 140px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      line-height: 1.5;
+      color: var(--text-light);
+    }
+    #redBasicaApp .log-entry {
+      padding: 2px 0;
+      border-bottom: 1px dotted #e2e8f0;
+    }
+    #redBasicaApp .log-entry:last-child {
+      border-bottom: none;
+    }
+    @media (max-width: 700px) {
+      #redBasicaApp .main-row {
+        flex-direction: column;
+      }
+      #redBasicaApp .side-panel {
+        flex: auto;
+        max-height: none;
+        border-left: none;
+        border-top: 1px solid var(--border);
+      }
+      #redBasicaApp .canvas-panel {
+        min-height: 380px;
+        border-right: none;
+      }
+    }
+  </style>
+
+  <div class="app-header">
+    <h2>🖧 Red Alámbrica – 5 PCs + Impresora</h2>
+    <div style="display:flex; gap:16px; flex-wrap:wrap;">
+      <span style="font-size:0.8rem;color:var(--text-light);">Dispositivos: <strong>7</strong></span>
+      <span style="font-size:0.8rem;color:var(--text-light);">Topología: <strong>Estrella</strong></span>
+    </div>
+  </div>
+
+  <div class="main-row">
+    <div class="canvas-panel" id="canvasWrapper3">
+      <canvas id="mainCanvas3"></canvas>
+      <div class="canvas-hint">🖱️ Pasa el cursor sobre los elementos | Usa los botones para simular tráfico</div>
+    </div>
+
+    <div class="side-panel">
+      <div class="control-group">
+        <h4>📤 Simular envío de datos</h4>
+        <div class="btn-row">
+          <button class="btn accent" id="btnToWWW">🌐 Ir a Internet</button>
+          <button class="btn printer" id="btnToPrinter">🖨️ Imprimir</button>
+        </div>
+        <div style="font-size:0.7rem; color:var(--text-light); margin-top:6px;">Origen: PC-1 (💻 192.168.1.10)</div>
+      </div>
+
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#0ea5e9;"></span> PC</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#8b5cf6;"></span> Impresora</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#f59e0b;"></span> Switch</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#10b981;"></span> Router</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#ef4444;"></span> Internet</span>
+      </div>
+
+      <div class="control-group">
+        <h4>📋 Actividad de red</h4>
+        <div class="log-area" id="logArea3">
+          <div class="log-entry">🟢 Red lista. Todos los dispositivos conectados.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const app = document.getElementById('redBasicaApp');
+      const canvas = document.getElementById('mainCanvas3');
+      const ctx = canvas.getContext('2d');
+      const wrapper = document.getElementById('canvasWrapper3');
+      const logArea = document.getElementById('logArea3');
+
+      let devices = [];
+      let packets = [];
+      let hoveredDevice = null;
+      let packetId = 0;
+
+      // Definiciones estáticas (posiciones relativas)
+      const deviceDefs = [
+        { id: 'www',       label: '🌐 WWW',      x: 0.5,  y: 0.08, color: '#ef4444', radius: 32, desc: 'Internet (nube pública)' },
+        { id: 'router',    label: '📡 Router',    x: 0.5,  y: 0.22, color: '#10b981', radius: 30, desc: 'Gateway 192.168.1.1' },
+        { id: 'switch',    label: '🔀 Switch',    x: 0.5,  y: 0.40, color: '#f59e0b', radius: 28, desc: 'Switch 8 puertos' },
+        { id: 'pc1',       label: '💻 PC-1',      x: 0.15, y: 0.58, color: '#0ea5e9', radius: 24, desc: '192.168.1.10 (Admin)' },
+        { id: 'pc2',       label: '💻 PC-2',      x: 0.30, y: 0.68, color: '#0ea5e9', radius: 24, desc: '192.168.1.11' },
+        { id: 'pc3',       label: '💻 PC-3',      x: 0.50, y: 0.72, color: '#0ea5e9', radius: 24, desc: '192.168.1.12' },
+        { id: 'pc4',       label: '💻 PC-4',      x: 0.70, y: 0.68, color: '#0ea5e9', radius: 24, desc: '192.168.1.13' },
+        { id: 'pc5',       label: '💻 PC-5',      x: 0.85, y: 0.58, color: '#0ea5e9', radius: 24, desc: '192.168.1.14' },
+        { id: 'printer',   label: '🖨️ Impresora', x: 0.85, y: 0.38, color: '#8b5cf6', radius: 26, desc: 'Impresora de red\n192.168.1.50' }
+      ];
+
+      // Conexiones (pares de índices)
+      const connections = [
+        { from: 0, to: 1 }, // www -> router
+        { from: 1, to: 2 }, // router -> switch
+        { from: 2, to: 3 }, // switch -> pc1
+        { from: 2, to: 4 }, // switch -> pc2
+        { from: 2, to: 5 }, // switch -> pc3
+        { from: 2, to: 6 }, // switch -> pc4
+        { from: 2, to: 7 }, // switch -> pc5
+        { from: 2, to: 8 }  // switch -> printer
+      ];
+
+      function updatePositions() {
+        const w = wrapper.clientWidth || 600;
+        const h = wrapper.clientHeight || 420;
+        devices = deviceDefs.map(d => ({
+          ...d,
+          screenX: d.x * w,
+          screenY: d.y * h,
+          screenR: d.radius * Math.min(w, h) / 600
+        }));
+      }
+
+      function resizeCanvas() {
+        const rect = wrapper.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        canvas.style.width = rect.width + 'px';
+        canvas.style.height = rect.height + 'px';
+        updatePositions();
+      }
+
+      function addLog(msg) {
+        const now = new Date();
+        const ts = now.toTimeString().slice(0,8);
+        const el = document.createElement('div');
+        el.className = 'log-entry';
+        el.textContent = `[${ts}] ${msg}`;
+        logArea.appendChild(el);
+        logArea.scrollTop = logArea.scrollHeight;
+        while(logArea.children.length > 25) logArea.removeChild(logArea.firstChild);
+      }
+
+      function findPath(fromId, toId) {
+        // Simple routing: if both behind switch, go through switch.
+        // If destination is www, go up to router then www.
+        // If destination is printer, go to switch then printer.
+        const fromDev = devices.find(d=>d.id===fromId);
+        const toDev = devices.find(d=>d.id===toId);
+        if (!fromDev || !toDev) return [];
+        let path = [];
+        if (fromId === 'www' || toId === 'www') {
+          if (fromId === 'www') {
+            path = [devices[0], devices[1], devices[2], toDev];
+          } else {
+            path = [fromDev, devices[2], devices[1], devices[0]];
+          }
+        } else if (fromId === 'printer' || toId === 'printer') {
+          path = [fromDev, devices[2], toDev];
+        } else {
+          // Both are PCs or printer not involved? Just go through switch.
+          path = [fromDev, devices[2], toDev];
+        }
+        // Clean duplicate consecutive
+        const clean = [];
+        for (let p of path) {
+          if (clean.length === 0 || clean[clean.length-1].id !== p.id) clean.push(p);
+        }
+        return clean;
+      }
+
+      function sendPacket(fromId, toId, label) {
+        const path = findPath(fromId, toId);
+        if (path.length < 2) return;
+        const pkt = {
+          id: packetId++,
+          path: path.map(d => ({x: d.screenX, y: d.screenY, devId: d.id})),
+          segment: 0,
+          progress: 0,
+          speed: 0.012,
+          color: toId === 'printer' ? '#8b5cf6' : '#ef4444',
+          label: label
+        };
+        packets.push(pkt);
+        addLog(`📤 Enviando datos: ${label}`);
+      }
+
+      function updatePackets() {
+        packets = packets.filter(p => {
+          if (p.segment >= p.path.length - 1) {
+            addLog(`✅ Paquete entregado (${p.label})`);
+            return false;
+          }
+          p.progress += p.speed;
+          if (p.progress >= 1.0) {
+            p.progress = 0;
+            p.segment++;
+            if (p.segment >= p.path.length - 1) {
+              addLog(`✅ Paquete entregado (${p.label})`);
+              return false;
+            }
+          }
+          return true;
+        });
+      }
+
+      function draw() {
+        const w = canvas.width, h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        
+        // Dibujar cables
+        connections.forEach(conn => {
+          const a = devices[conn.from], b = devices[conn.to];
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(a.screenX, a.screenY);
+          ctx.lineTo(b.screenX, b.screenY);
+          ctx.stroke();
+          
+          // Flecha pequeña en medio (dirección opcional)
+          const mx = (a.screenX + b.screenX) / 2;
+          const my = (a.screenY + b.screenY) / 2;
+          ctx.fillStyle = '#94a3b8';
+          ctx.beginPath();
+          ctx.arc(mx, my, 3, 0, 2*Math.PI);
+          ctx.fill();
+        });
+
+        // Dibujar dispositivos
+        devices.forEach(d => {
+          const {screenX: x, screenY: y, screenR: r} = d;
+          
+          // Sombra suave
+          ctx.shadowColor = 'rgba(0,0,0,0.1)';
+          ctx.shadowBlur = 8;
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, 2*Math.PI);
+          ctx.fill();
+          ctx.shadowColor = 'transparent';
+          
+          // Borde
+          ctx.strokeStyle = d.color;
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+          
+          // Icono (emoji)
+          ctx.font = `${r*0.9}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(d.label.split(' ')[0], x, y);
+          
+          // Etiqueta debajo
+          ctx.fillStyle = '#1e293b';
+          ctx.font = `bold ${Math.max(9, r*0.35)}px "Segoe UI", sans-serif`;
+          ctx.fillText(d.label.split(' ').slice(1).join(' '), x, y + r + 14);
+          
+          // Hover resaltado
+          if (hoveredDevice && hoveredDevice.id === d.id) {
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(x, y, r+3, 0, 2*Math.PI);
+            ctx.stroke();
+            
+            // Tooltip
+            const lines = d.desc.split('\n');
+            const tipW = 160, tipH = 16 + lines.length * 16;
+            let tipX = x + r + 10;
+            let tipY = y - tipH/2;
+            if (tipX + tipW > w - 10) tipX = x - r - tipW - 10;
+            if (tipY < 10) tipY = 10;
+            ctx.fillStyle = 'rgba(15,23,42,0.9)';
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.roundRect(tipX, tipY, tipW, tipH, 8);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = '#f1f5f9';
+            ctx.font = 'bold 11px "Segoe UI", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(d.label, tipX+10, tipY+16);
+            ctx.font = '10px "Segoe UI", sans-serif';
+            ctx.fillStyle = '#cbd5e1';
+            lines.forEach((line, i) => {
+              ctx.fillText(line, tipX+10, tipY+32 + i*14);
+            });
+            ctx.textAlign = 'center';
+          }
+        });
+
+        // Paquetes en movimiento
+        packets.forEach(p => {
+          if (p.segment >= p.path.length-1) return;
+          const a = p.path[p.segment];
+          const b = p.path[Math.min(p.segment+1, p.path.length-1)];
+          const t = p.progress;
+          const px = a.x + (b.x - a.x) * t;
+          const py = a.y + (b.y - a.y) * t;
+          
+          ctx.fillStyle = p.color;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 6;
+          ctx.beginPath();
+          ctx.arc(px, py, 5, 0, 2*Math.PI);
+          ctx.fill();
+          ctx.shadowColor = 'transparent';
+          
+          // Etiqueta pequeña
+          ctx.fillStyle = '#0f172a';
+          ctx.font = '8px sans-serif';
+          ctx.fillText('📦', px, py-10);
+        });
+      }
+
+      function loop() {
+        updatePackets();
+        draw();
+        requestAnimationFrame(loop);
+      }
+
+      // Eventos
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        hoveredDevice = null;
+        for (let d of devices) {
+          const dx = mx - d.screenX, dy = my - d.screenY;
+          if (Math.sqrt(dx*dx + dy*dy) < d.screenR + 6) {
+            hoveredDevice = d;
+            break;
+          }
+        }
+        canvas.style.cursor = hoveredDevice ? 'pointer' : 'default';
+      });
+      canvas.addEventListener('mouseleave', () => {
+        hoveredDevice = null;
+      });
+
+      document.getElementById('btnToWWW').addEventListener('click', () => {
+        sendPacket('pc1', 'www', 'PC-1 → Internet');
+      });
+      document.getElementById('btnToPrinter').addEventListener('click', () => {
+        sendPacket('pc1', 'printer', 'PC-1 → Impresora');
+      });
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+      loop();
+    })();
+  </script>
+</div>
